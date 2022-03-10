@@ -1,0 +1,66 @@
+package edu.gonzaga;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Assertions;
+class DieTest {
+    @Test
+    void testDefaultValue() {
+        Integer expectedValue = 1;
+        Die die = new Die(6);
+        System.out.println("Default value should be 1");
+        assertEquals(expectedValue, die.getSideUp());
+    }
+
+    @Test
+    void testInitializedValue() {
+        Integer expectedValue = 4;
+        Die die = new Die(6, expectedValue);
+        System.out.println("Initialized value should be 4");
+        assertEquals(expectedValue, die.getSideUp());
+    }
+
+    @Test
+    void testGreaterThan() {
+        Integer die1Value = 6;
+        Integer die2Value = 4;
+        Die die1 = new Die(6, die1Value);
+        Die die2 = new Die(6, die2Value);
+        assertTrue(die1.compareTo(die2) > 0 );
+    }
+
+    @Test
+    void testLessThan() {
+        Integer die1Value = 1;
+        Integer die2Value = 2;
+        Die die1 = new Die(6, die1Value);
+        Die die2 = new Die(6, die2Value);
+        assertTrue(die1.compareTo(die2) < 0 );
+    }
+
+    @Test
+    void testEquals() {
+        Integer die1Value = 3;
+        Integer die2Value = 3;
+        Die die1 = new Die(6, die1Value);
+        Die die2 = new Die(6, die2Value);
+        assertTrue(die1.compareTo(die2) == 0);
+    }
+
+    @Test
+    void checkGetSideUp() {
+        Die die = new Die(12, 3);
+        int expected = 3;
+        int actual = die.getSideUp();
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void checkGetNumSides() {
+        Die die = new Die(123, 4);
+        int expected = 123;
+        int actual = die.getNumSides();
+        Assertions.assertEquals(expected, actual);
+    }
+}
+
