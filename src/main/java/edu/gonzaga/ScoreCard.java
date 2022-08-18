@@ -1,137 +1,168 @@
 /**
- * Name: Joshua Venable
- * Class: CPSC 224, Spring 2022
- * Date: 2/13/22
- * Programming Assigment: Yahtzee HW3
- * Description: To build and implement the game of yahtzee in Java
- * Notes: 
- *  
- * 
- **/
-
+ * This program plays a game of Yahtzee.
+ * CPSC 224, Spring 2022
+ * HW4
+ * No sources to cite.
+ *
+ * @author Tyler CH
+ * @version v1.0 4/7/2022
+ */
 package edu.gonzaga;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 
-public class ScoreCard extends ArrayList<ScoreCardLine>{
+/** Class to store the upper and lower sections of the scorecard. */
+public abstract class Scorecard implements PropertyChangeListener {
+    private ArrayList<ScorecardLine> lines;
 
-    public ScoreCard(int numSides, int numOfKind)
-    {
-        for(int i = 1; i <= numSides; i ++)
-        {
-            this.add(new ScoreCardLine("" + i));
-        }
-        for(int i = 3; i < numOfKind + 3; i ++)
-        {
-            this.add(new ScoreCardLine("OFKIND" + i));
-        }
-        this.add(new ScoreCardLine(SectionNames.FULLHOUSE.name()));
-        this.add(new ScoreCardLine(SectionNames.SMSTRAIGHT.name()));
-        this.add(new ScoreCardLine(SectionNames.LGSTRAIGHT.name()));
-        this.add(new ScoreCardLine(SectionNames.YAHTZEE.name()));
-        this.add(new ScoreCardLine(SectionNames.CHANCE.name()));
+    boolean isFull;
+
+    private GameConfiguration configuration;
+
+    private ScorecardLine totalLine;
+
+    private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+
+    protected Scorecard() {
+        lines = new ArrayList<>();
+        isFull = false;
+        totalLine = new ScorecardLine("TOTAL");
     }
 
+    protected Scorecard(GameConfiguration configuration) {
+        this();
+        this.configuration = configuration;
+    }
+
+    /**
+     * Registers a PropertyChangeListener to this class.
+     * 
+     * @param listener the listener to register.
+     */
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        this.pcs.addPropertyChangeListener(listener);
+    }
+
+    /**
+     * Removes a PropertyChangeListener to this class.
+     * 
+     * @param listener the listener to remove.
+     */
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        this.pcs.removePropertyChangeListener(listener);
+    }
+
+    /**
+     * When a property is changed in a scoreline, fire a property change event,
+     * reset un-scored lines
+     * after calculating score values, and set isFull to true if there are no empty
+     * lines
+     * 
+     * @param evt The event that was fired.
+     */
     @Override
-    public String toString()
-    {
-        String line = "";
-        for(ScoreCardLine i : this)
-        {
-            line += i.toString() + ", ";
+    public void propertyChange(PropertyChangeEvent evt) { // When a property is changed in a scoreline
+        if (evt.getPropertyName().equals("scored")) {
+            pcs.firePropertyChange("scored", evt.getOldValue(), evt.getNewValue());
+            boolean emptyLine = false;
+            for (ScorecardLine line : lines) { // Reset un-scored lines after calculating score values.
+                if (!line.isScored()) {
+                    line.setValue(0);
+                }
+
+                calcNewTotal();
+
+                if (!line.isScored()) {
+                    emptyLine = true;
+                }
+            }
+            isFull = !emptyLine;
         }
-        return line;
     }
 
     /**
-     * @Author Joshua Venable
-     * @Date created: 2/13/22; 
-     * Date last modified: 2/13/22
-     * @Description returns the scoreCardLine instance that matches the line id given
-     * @param line the string of the id being searched for
-     * @return the scoreCardLine if found, null otherwise
-     * @pre uknown scoreCardLine in scoreCard
-     * @post returned scoreCardLine in scoreCard
-     **/
-    public ScoreCardLine getLine(String line)
-    {
-        for(ScoreCardLine i : this)
-        {
-            if(i.toString().equals(line))
-            {
-                return i;
+     * <<<<<<< HEAD
+     * If all the lines are scored, then the scorecard is full
+     * 
+     * @return The method isFull() is returning a boolean value.
+     *         =======
+     *         Test if all lines in scorecard are full.
+     * 
+     * @return True if full, false if not full.
+     *         >>>>>>> de9b885f21a5a199f4ad46faa00b02a09beb0b65
+     */
+    public boolean isFull() {
+        for (ScorecardLine line : getLines()) {
+            if (!line.isScored()) {
+                return false;
             }
         }
-        return null;
-    }
-
-
-    /**
-     * @Author Joshua Venable
-     * @Date created: 2/17/22; 
-     * Date last modified: 2/17/22
-     * @Description resets the scores of the scoreCardLines for a new game
-     * @pre previously scored scores 
-     * @post fresh set of scoreCardLines with boolean values still set
-     **/
-    public void gameEnd()
-    {
-        for(ScoreCardLine i : this)
-        {
-            i.setPossibleScore(0);
-        }
+        return true;
     }
 
     /**
-     * @Author Joshua Venable
-     * @Date created: 2/13/22
-     * Date last modified: 2/21/22
-     * @Description calculates the user's total score, with adding a bonus score if upper section gets >= 63
-     * @return the user's total score
-     * @pre unknown total score
-     * @post known total score
-     **/
-    public int getTotalScore()
-    {
-        int total = 0;
-        int upperTotal = 0;
-        
-        //calculating all scores
-        for(ScoreCardLine i : this)
-        {
-            if(i.toString().length() <= 1)
-            {
-                upperTotal += i.getScore();
-            }
-            total += i.getScore();
-        }
-
-        //adding upper section bonus
-        if(upperTotal >= 63)
-        {
-            total += 35;
-        }
-        return total;
+     * <<<<<<< HEAD
+     * This function returns an ArrayList of ScorecardLine objects
+     * 
+     * @return The lines arraylist.
+     *         =======
+     *         Get the data of all lines in this scorecard.
+     * 
+     * @return The list of lines in this scorecard.
+     *         >>>>>>> de9b885f21a5a199f4ad46faa00b02a09beb0b65
+     */
+    public ArrayList<ScorecardLine> getLines() {
+        return lines;
     }
 
     /**
-     * @Author Joshua Venable
-     * @Date created: 2/23/22; 
-     * Date last modified: 2/23/22
-     * @Description Returns the first instance of an unplayed scoreCardLine
-     * @return the first unplayed scoreCardLine
-     * @pre unknown first unplayed scoreCardLine
-     * @post known first unplayed scoreCardLine
-     **/
-    public ScoreCardLine getUnplayed()
-    {
-        for(ScoreCardLine i : this)
-        {
-            if(!i.hasBeenPicked())
-            {
-                return i;
-            }
+     * This function is called when a new hand is dealt. It should update the score
+     * of the hand.
+     * 
+     * @param hand The hand to score.
+     */
+    public abstract void scoreNewHand(Hand hand);
+
+    /**
+     * "If the total has changed, fire a property change event."
+     * 
+     * The first line of the function gets the old total. The third line sets the
+     * new total by summing the values and fires a property change event.
+     * The fourth line fires a property change event for the total
+     */
+    public void calcNewTotal() {
+        int old = totalLine.getValue();
+        int sum = 0;
+        for (ScorecardLine line : getLines()) {
+            sum += line.getValue();
         }
-        return null;
+
+        totalLine.setValueWithEvent(sum);
+        pcs.firePropertyChange("total", old, sum);
+
     }
+
+    /**
+     * <<<<<<< HEAD
+     * This function returns the totalLine
+     * 
+     * @return The totalLine object.
+     *         =======
+     *         Gets the total line model for this scorecard.
+     * 
+     * @return the total line model.
+     *         >>>>>>> de9b885f21a5a199f4ad46faa00b02a09beb0b65
+     */
+    public ScorecardLine getTotalLine() {
+        return totalLine;
+    }
+
+    public ScorecardLine setTotalLine(Integer number) {
+        totalLine.setValue(number);
+        return totalLine;
+    }
+
 }

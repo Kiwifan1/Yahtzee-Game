@@ -1,122 +1,114 @@
 /**
- * Name: Joshua Venable
- * Class: CPSC 224, Spring 2022
- * Date: 2/13/22
- * Programming Assigment: Yahtzee HW3
- * Description: To build and implement the game of yahtzee in Java
- * Notes: 
- *  
- * 
- **/
-
+ * This program plays a game of Yahtzee.
+ * CPSC 224, Spring 2022
+ * HW4
+ * No sources to cite.
+ *
+ * @author Tyler CH
+ * @version v1.0 4/7/2022
+ */
 package edu.gonzaga;
 
-public class ScoreCardLine {
-    private String id;
-    private boolean beenPicked;
-    private int possibleScore;
-    private int score;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
-    public ScoreCardLine()
-    {
-        this.possibleScore = 0;
-        this.score = 0;
-        this.beenPicked = false;
+public class ScorecardLine {
+
+    private String identifier;
+    private String title;
+
+    private boolean scored;
+    private int value;
+
+    private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+
+    public ScorecardLine(String title) {
+        this(title, "");
     }
 
-    public ScoreCardLine(String id)
-    {
-        this.id = id;
-        this.possibleScore = 0;
-        this.score = 0;
-        this.beenPicked = false;
-    }
-
-    public ScoreCardLine(String id, int possibleScore)
-    {
-        this.id = id;
-        this.possibleScore = possibleScore;
-        this.score = 0;
-        this.beenPicked = false;
+    public ScorecardLine(String title, String identifier) {
+        this.identifier = identifier;
+        this.value = 0;
+        this.scored = false;
+        this.title = title;
     }
 
     /**
-     * @Author Joshua Venable
-     * @Date created: 2/11/22; 
-     * Date last modified: 2/11/22
-     * @Description simple setting method for possible scores
-     * @param possibleScore an integer noting the possible score a player could receive
-     * @pre unset possible score
-     * @post set possible score
-     **/
-    public void setPossibleScore(int possibleScore)
-    {
-        this.possibleScore = possibleScore;
-    }
-
-
-    /**
-     * @Author Joshua Venable
-     * @Date created: 2/11/22; 
-     * Date last modified: 2/21/22
-     * @Description sets the score if chosen to the possible score
-     * @pre unset final score
-     * @post set final score to the possible score and notified that its been picked
-     **/
-    public void setFinalScore()
-    {
-        this.score = possibleScore;
-        this.beenPicked = true;
+     * Registers a PropertyChangeListener to this class.
+     * 
+     * @param listener the listener to register.
+     */
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        this.pcs.addPropertyChangeListener(listener);
     }
 
     /**
-     * @Author Joshua Venable
-     * @Date created: 2/11/22; 
-     * Date last modified: 2/13/22
-     * @Description sets the score to a new Score
-     * @param newScore the new score thats going to be the final score
-     * @pre unset final score
-     * @post set final score to the new score and notified that its been picked
-     **/
-    public void setFinalScore(int newScore)
-    {
-        this.score = newScore;
-        this.beenPicked = true;
+     * Removes a PropertyChangeListener to this class.
+     * 
+     * @param listener the listener to remove.
+     */
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        this.pcs.removePropertyChangeListener(listener);
     }
 
     /**
-     * @Author Joshua Venable
-     * @Date created: 2/13/22; 
-     * Date last modified: 2/13/22
-     * @Description simple getter method for seeing if user has picked this scoreLine before
-     * @return boolean on whether scoreLine instance has been picked
-     * @pre unknown whether scoreLine instance has been picked
-     * @post known whether scoreLine instance has been picked
-     **/
-    public boolean hasBeenPicked()
-    {
-        return this.beenPicked;
+     * @return returns the string identifier
+     */
+    public String getIdentifier() {
+        return identifier;
     }
 
-    public void setScore(int score)
-    {
-        this.score = score;
-    }
-    
-    public int getScore()
-    {
-        return this.score;
+    /**
+     * @return true if this scoreline has a scored value.
+     */
+    public boolean isScored() {
+        return scored;
     }
 
-    public int getPossibleScore()
-    {
-        return this.possibleScore;
+    /**
+     * If the line has already been scored, throw an exception. Otherwise, set the
+     * scored variable to true and fire a property change event
+     * 
+     * @exception IllegalStateException()
+     */
+    public void score() {
+        if (scored) {
+            throw new IllegalStateException("Line already scored.");
+        }
+        scored = true;
+        pcs.firePropertyChange("scored", -1, value);
     }
 
-    @Override
-    public String toString()
-    {
-        return this.id;
+    /**
+     * @return the score value of this scoreline.
+     */
+    public int getValue() {
+        return value;
     }
 
+    /**
+     * @return the displayed title of this scoreline
+     */
+    public String getTitle() {
+        return title;
+    }
+
+    /**
+     * @param value sets a new score value for this scoreline.
+     */
+    public void setValue(int value) {
+        this.value = value;
+    }
+
+    /**
+     * If the new {@link ScorecardLine} value is different than the old value, then
+     * fire a property change event.
+     * 
+     * @param value The name of the property.
+     */
+    public void setValueWithEvent(int value) {
+        int oldValue = this.value;
+        this.setValue(value);
+        pcs.firePropertyChange("value", oldValue, value);
+    }
 }
